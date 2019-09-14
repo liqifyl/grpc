@@ -13,3 +13,8 @@ export GRPC_VERBOSITY=DEBUG
 
 1. grpc_arg结构体在grpc/impl/codegen/grpc_types.h文件中
 2. grpc_channel_args结构体在grpc/impl/codegen/grpc_types.h文件中
+3. grpc_channel_credentials结构体在src/core/lib/security/credentials/credentials.h文件中
+4. grpc_channel_credentials_to_arg方法所在文件src/core/lib/security/credentials/credentials.cc
+
+# grpc_impl::Channel创建流程
+
