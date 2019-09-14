@@ -11,4 +11,5 @@ export GRPC_VERBOSITY=DEBUG
 
 # grpc args
 
-· grpc_arg结构体在grpc/impl/codegen/grpc_types.h文件中
+1. grpc_arg结构体在grpc/impl/codegen/grpc_types.h文件中
+2. grpc_channel_args结构体在grpc/impl/codegen/grpc_types.h文件中
