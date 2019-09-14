@@ -34,8 +34,23 @@ grpc_channel结构体创建流程:grpc_impl::CreateCustomChannelImpl->grpc::Chan
 
 4. grpc::SecureChannelCredentials::CreateChannelWithInterceptors方法中会调用grpc_core::grpc_secure_channel_create方法，grpc_core::grpc_secure_channel_create方法在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc
 
+5. grpc_core::CreateChannel方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc中
+
 ## grpc_core::grpc_secure_channel_create注意事项
 
 1. 本方法中会创建2个指针类型的grpc_arg参数，一个指针指向Chttp2SecureClientChannelFactory，一个指针指向grpc_channel_credentials
+
+2. grpc_core::Chttp2SecureClientChannelFactory::CreateSubchannel函数何时被调用
+
+# grpc connector 和 grpc subchannel
+
+## grpc_connector结构体
+
+1. grpc_connector结构体在src/core/ext/filters/client_channel/connector.h文件中
+2. grpc_connector结构体中有类型grpc_connector_vtable的字段，grpc_connector_vtable结构体定义在src/core/ext/filters/client_channel/connector.h中
+
+# rpc的创建
+
+1.
 
 
