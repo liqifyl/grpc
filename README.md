@@ -8,3 +8,7 @@ grpc asyc stream在释放时的顺序是stream->ctx->queue->channel->stub
 
 # grpc调试
 export GRPC_VERBOSITY=DEBUG
+
+# grpc args
+
+. grpc_arg结构体在grpc/impl/codegen/grpc_types.h文件中
