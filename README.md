@@ -15,17 +15,29 @@ export GRPC_VERBOSITY=DEBUG
 
 2. grpc_init方法定义在src/core/lib/surface/init.cc文件中，本方法执行流程请浏览[init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)
 
-3.grpc_register_built_in_plugins方法定义在[grpc_plugin_registry.cc](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)文件中，本方法注册的相应插件请浏览源码
+3. grpc_register_built_in_plugins方法定义在[grpc_plugin_registry.cc](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)文件中
 
-3. grpc_register_security_filters
+4. grpc_register_security_filters
 
-4. register_builtin_channel_init方法定义在src/core/lib/surface/init.cc文件中
+5. register_builtin_channel_init方法定义在src/core/lib/surface/init.cc文件中
 
-5. grpc_channel_init_finalize方法定义在src/core/lib/surface/channel_init.cc中
+6. grpc_channel_init_finalize方法定义在src/core/lib/surface/channel_init.cc中
 
-6. grpc_security_init方法定义在src/core/lib/surface/init_secure.cc
+7. grpc_security_init方法定义在src/core/lib/surface/init_secure.cc
 
-7. grpc_channel_init_register_stage方法定义在src/core/lib/surface/channel_init.cc中
+8. grpc_channel_init_register_stage方法定义在src/core/lib/surface/channel_init.cc中
+
+## grpc init流程中插件注册
+
+### grpc_client_channel插件注册
+
+* 调用grpc_register_plugin(grpc_client_channel_init,grpc_client_channel_shutdown)注册一个grpc_client_channel全局插件，grpc_register_plugin方法定义在[init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)中，注册插件的方法会在grpc_init中调用
+
+* grpc_client_channel_init方法定义在[client_channel_plugin.cc](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel_plugin.cc)中，在grpc_client_channel_init方法中会调用grpc_channel_init_register_stage注册一个全局stage_slot,grpc_channel_init_register_stage方法定义在[channel_init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)，这里grpc_channel_init_register_stage函数会传入2个参数，一个参数是append_filter函数，grpc_client_channel_filter
+
+* append_filter何时被调用?,在调用[grpc_channel_create](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)创建grpc_channel时在构建完[grpc_channel_stack_builder](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.h)后会调用[grpc_channel_init_create_stack](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)方法执行所有注册全局[stage_slot](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc),stage_slot结构体中定义一个fn字段用于执行注册的回调函数,从而也会调用appen_filter函数,append_filter函数会执行[grpc_channel_stack_builder_append_filter](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)将[grpc_client_channel_filter](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel.cc)添加到channel_stack_builder结构体filter链表中
+
+* 注册到channel_stack_builder结构体的作用？
 
 
 
