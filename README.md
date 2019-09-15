@@ -13,7 +13,9 @@ export GRPC_VERBOSITY=DEBUG
 
 1. do_basic_init初始化基本资源，本方法内部会执行grpc_register_built_in_plugins方法注册所有插件，do_basic_init方法定义在src/core/lib/surface/init.cc文件中
 
-2. grpc_init方法定义在src/core/lib/surface/init.cc文件中，本方法
+2. grpc_init方法定义在src/core/lib/surface/init.cc文件中，本方法执行流程请浏览[init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)
+
+3.grpc_register_built_in_plugins方法定义在[grpc_plugin_registry.cc](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)文件中，本方法注册的相应插件请浏览源码
 
 3. grpc_register_security_filters
 
