@@ -35,10 +35,10 @@ export GRPC_VERBOSITY=DEBUG
 
 * grpc_client_channel_init方法定义在[client_channel_plugin.cc](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel_plugin.cc)中，在grpc_client_channel_init方法中会调用grpc_channel_init_register_stage注册一个全局stage_slot,grpc_channel_init_register_stage方法定义在[channel_init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)，这里grpc_channel_init_register_stage函数会传入2个参数，一个参数是append_filter函数，grpc_client_channel_filter
 
-* append_filter何时被调用?,在调用[grpc_channel_create](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)创建grpc_channel时在构建完[grpc_channel_stack_builder](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.h)后会调用[grpc_channel_init_create_stack](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)方法执行所有注册全局[stage_slot](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc),stage_slot结构体中定义一个fn字段用于执行注册的回调函数,从而也会调用appen_filter函数,append_filter函数会执行[grpc_channel_stack_builder_append_filter](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)将[grpc_client_channel_filter](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel.cc)添加到channel_stack_builder结构体filter链表中
+* append_filter何时被调用? 在调用[grpc_channel_create](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)创建grpc_channel时在构建完[grpc_channel_stack_builder](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.h)后会调用[grpc_channel_init_create_stack](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)方法执行所有注册全局[stage_slot](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc),stage_slot结构体中定义一个fn字段用于执行注册的回调函数,从而也会调用appen_filter函数,append_filter函数会执行[grpc_channel_stack_builder_append_filter](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)将[grpc_client_channel_filter](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel.cc)添加到channel_stack_builder结构体filter链表中
 
-* 注册到channel_stack_builder结构体的作用？
-
+* 注册到channel_stack_builder结构体的grpc_cilent_channel_filter作用？grpc_client_channel_filter的类型是结构体[grpc_channel_filter](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/http/client/http_client_filter.cc);在创建grpc_channel时会触发[grpc_channel_create_with_builder](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)，在grpc_channel_create_with_builder方法中会执行[grpc_channel_stack_builder_finish](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)
+方法，最终执行[grpc_channel_stack_init](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack.cc)方法，最终执行grpc_client_channel_filter变量中定义的init_channel_ele方法，grpc_client_channel_filter.init_channel_ele指针指向[ChannelData::Init](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel.cc)
 
 
 # grpc args
@@ -82,7 +82,9 @@ grpc_channel结构体创建流程:grpc_impl::CreateCustomChannelImpl->grpc::Chan
 
 3. grpc_channel_element和grpc_channel_filter结构体定义在src/core/lib/channel/channel_stack.h文件中
 
-4. grpc_channel_filter
+### grpc_channel_filter结构体分析
+
+
 
 
 # grpc connector 和 grpc subchannel
