@@ -40,7 +40,7 @@ export GRPC_VERBOSITY=DEBUG
 * 注册到channel_stack_builder结构体的grpc_cilent_channel_filter作用？grpc_client_channel_filter的类型是结构体[grpc_channel_filter](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/http/client/http_client_filter.cc);在创建grpc_channel时会触发[grpc_channel_create_with_builder](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)，在grpc_channel_create_with_builder方法中会执行[grpc_channel_stack_builder_finish](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)
 方法，最终执行[grpc_channel_stack_init](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack.cc)方法，最终执行grpc_client_channel_filter变量中定义的init_channel_ele方法，grpc_client_channel_filter.init_channel_ele指针指向[ChannelData::Init](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel.cc),ChannelData::Init方法中会创建一个ChannelData对象,在ChannelData构造函数中会调用[ClientChannelFactory::GetFromChannelArgs](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel_factory.cc)函数返回在[grpc_secure_channel_create](https://github.com/grpc/grpc/blob/master/src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc)或者[grpc_insecure_channel_create](https://github.com/grpc/grpc/blob/master/src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc)注册的[ClientChannelFactory](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel_factory.h)对象
 
-* [ClientChannelFactory::CreateSubChannel](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel_factory.h)方法如何被调用
+* [ClientChannelFactory::CreateSubChannel](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel_factory.h)方法如何被调用？暂时猜测是在创建grpc_call时被创建，具体代码位置在[CallData::PickSubchannelLocked](https://github.com/grpc/grpc/blob/master/src/core/lib/transport/connectivity_state.cc)
 
 # grpc args
 
@@ -96,7 +96,5 @@ grpc_channel结构体创建流程:grpc_impl::CreateCustomChannelImpl->grpc::Chan
 2. grpc_connector结构体中有类型grpc_connector_vtable的字段，grpc_connector_vtable结构体定义在src/core/ext/filters/client_channel/connector.h中
 
 # rpc的创建
-
-1.
 
 
