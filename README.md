@@ -81,7 +81,9 @@ export GRPC_VERBOSITY=DEBUG
 grpc::internal::BlockingUnaryCall是阻塞类型的call，创建流程如下：
 * [grpc::internal::BlockingUnaryCall](https://github.com/grpc/grpc/blob/master/include/grpcpp/impl/codegen/client_unary_call.h)->[grpc_impl::Channel::CreateCall](https://github.com/grpc/grpc/blob/master/src/cpp/client/channel_cc.cc)->[grpc_impl::Channel::CreateCallInternal](https://github.com/grpc/grpc/blob/master/src/cpp/client/channel_cc.cc)->[grpc_channel_create_call](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)->[grpc_channel_create_call_internal](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)->[grpc_call_create](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/call.cc);grpc_call_create内部返回[grpc_call](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/call.cc)对象;[grpc_impl::Channel::CreateCall](https://github.com/grpc/grpc/blob/master/src/cpp/client/channel_cc.cc)内部返回[grpc::internal::Call](https://github.com/grpc/grpc/blob/master/include/grpcpp/impl/codegen/call.h)
 
-## grpc::internal::Call
+## grpc::internal::Call执行流程
+
+* grpc::internal::Call的构造函数会传入3个参数分别是grpc_call、grpc::internal::CallHook、CompletionQueue，其中[grpc::internal::CallHook](https://github.com/grpc/grpc/blob/master/include/grpcpp/impl/codegen/call_hook.h)是个抽象类
 
 * grpc::internal::BlockingUnaryCall构造函数创建完grpc::internal::Call对象后执行grpc::internal::Call::PerformOps函数发送CallOpSet对象
 
