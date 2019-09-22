@@ -11,21 +11,20 @@ export GRPC_VERBOSITY=DEBUG
 
 # grpc init流程
 
-1. do_basic_init初始化基本资源，本方法内部会执行grpc_register_built_in_plugins方法注册所有插件，do_basic_init方法定义在src/core/lib/surface/init.cc文件中
+1. [do_basic_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)初始化channel所需要的资源，本方法内部会执行[grpc_register_built_in_plugins](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)方法注册所有插件;do_basic_init方法定义在[src/core/lib/surface/init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)文件中
 
 2. grpc_init方法定义在src/core/lib/surface/init.cc文件中，本方法执行流程请浏览[init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)
 
-3. grpc_register_built_in_plugins方法定义在[grpc_plugin_registry.cc](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)文件中
+3. grpc_register_built_in_plugins方法定义在[src/core/plugin_registry/grpc_plugin_registry.cc](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)文件
 
 4. grpc_register_security_filters
 
-5. register_builtin_channel_init方法定义在src/core/lib/surface/init.cc文件中
+5. register_builtin_channel_init方法定义在[src/core/lib/surface/init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)文件中
 
-6. grpc_channel_init_finalize方法定义在src/core/lib/surface/channel_init.cc中
+6. grpc_channel_init_finalize和grpc_channel_init_register_stage方法定义在[src/core/lib/surface/channel_init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)文件中
 
-7. grpc_security_init方法定义在src/core/lib/surface/init_secure.cc
+7. grpc_security_init方法定义在[src/core/lib/surface/init_secure.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init_secure.cc)文件中
 
-8. grpc_channel_init_register_stage方法定义在src/core/lib/surface/channel_init.cc中
 
 ## grpc init流程中插件注册
 
