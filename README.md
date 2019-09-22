@@ -33,25 +33,26 @@ export GRPC_VERBOSITY=DEBUG
 
 
 ## grpc_init函数执行流程
-* 首先只[do_basic_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)初始化channel所需要的资源，本方法内部会执行[grpc_register_built_in_plugins](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)方法注册所有插件;do_basic_init方法定义在[src/core/lib/surface/init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)文件中
-## grpc cpp如何触发grpc_channel_create
 
-2. grpc_init方法定义在src/core/lib/surface/init.cc文件中，本方法执行流程请浏览[init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)
+[src/core/lib/surface/init.cc/grpc_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)函数会初始化所以需要的资源，下面分析几个重要函数：
 
-3. grpc_register_built_in_plugins方法定义在[src/core/plugin_registry/grpc_plugin_registry.cc](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)文件
+* [do_basic_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)函数中会执行[grpc_register_built_in_plugins](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)方法注册所有插件
 
-4. grpc_register_security_filters
+* [src/core/plugin_registry/grpc_plugin_registry.cc/grpc_register_built_in_plugins](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)函数会注册所有需要插件，包括channel、dns resolver、lb、http等，后面会详细分析
 
-5. register_builtin_channel_init方法定义在[src/core/lib/surface/init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)文件中
+* [src/core/lib/surface/init.cc/register_builtin_channel_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)函数会注册一些默认插件，相应插件的含义不了解
 
-6. grpc_channel_init_finalize和grpc_channel_init_register_stage方法定义在[src/core/lib/surface/channel_init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)文件中
+* [src/core/lib/surface/channel_init.cc/grpc_channel_init_register_stage](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)函数用于保存注册插件信息
+* [src/core/lib/surface/channel_init.cc/grpc_channel_init_finalize](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)函数用于销毁注册插件信息
 
-7. grpc_security_init方法定义在[src/core/lib/surface/init_secure.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init_secure.cc)文件中
+* [src/core/lib/surface/init_secure.cc/grpc_security_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init_secure.cc)函数的含义暂时不了解
+
+* [src/core/lib/surface/channel_init.cc/grpc_channel_init_create_stack]函数执行所有注册插件的回调函数，grpc_channel_init_create_stack在[src/core/lib/channel/channel_stack_builder.cc/grpc_channel_stack_builder_finish](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)函数中
 
 
-## grpc init流程中插件注册
+# 插件注册流程和如何被执行
 
-### grpc_client_channel插件注册
+## grpc_client_channel插件注册
 
 * 调用grpc_register_plugin(grpc_client_channel_init,grpc_client_channel_shutdown)注册一个grpc_client_channel全局插件，grpc_register_plugin方法定义在[init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)中，注册插件的方法会在grpc_init中调用
 
