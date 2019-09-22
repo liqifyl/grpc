@@ -47,7 +47,7 @@ export GRPC_VERBOSITY=DEBUG
 
 * [src/core/lib/surface/init_secure.cc/grpc_security_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init_secure.cc)函数的含义暂时不了解
 
-* [src/core/lib/surface/channel_init.cc/grpc_channel_init_create_stack]函数执行所有注册插件的回调函数，grpc_channel_init_create_stack在[src/core/lib/channel/channel_stack_builder.cc/grpc_channel_stack_builder_finish](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)函数中
+* [src/core/lib/surface/channel_init.cc/grpc_channel_init_create_stack](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)函数执行所有注册插件的回调函数，grpc_channel_init_create_stack在[src/core/lib/channel/channel_stack_builder.cc/grpc_channel_stack_builder_finish](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)函数中被调用
 
 
 # 插件注册流程和如何被执行
