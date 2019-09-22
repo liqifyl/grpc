@@ -9,13 +9,13 @@ grpc asyc stream在释放时的顺序是stream->ctx->queue->channel->stub
 # grpc调试
 export GRPC_VERBOSITY=DEBUG
 
-# grpc::Channel对象创建流程
+# grpc_impl::Channel对象创建流程
 
 下面以创建SecureChannel为例：
 
 [grpc_impl::CreateCustomChannelImpl](https://github.com/grpc/grpc/blob/master/src/cpp/client/create_channel.cc)->[grpc::ChannelCredentials(抽象类)::CreateChannelImpl](https://github.com/grpc/grpc/blob/master/include/grpcpp/security/credentials_impl.h)->[grpc::SecureChannelCredentials::CreateChannelImpl](https://github.com/grpc/grpc/blob/master/src/cpp/client/secure_credentials.cc)->[grpc::SecureChannelCredentials::CreateChannelWithInterceptors](https://github.com/grpc/grpc/blob/master/src/cpp/client/secure_credentials.cc)->[grpc_core::grpc_secure_channel_create](https://github.com/grpc/grpc/blob/master/src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc)->[grpc_core::CreateChannel](https://github.com/grpc/grpc/blob/master/src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc)->[grpc::CreateChannelInternal](https://github.com/grpc/grpc/blob/master/src/cpp/client/create_channel_internal.cc)
 
-1. grpc::Channel类在src/cpp/client/channel_cc.cc文件中
+1. grpc_impl::Channel类在src/cpp/client/channel_cc.cc文件中
 
 2. grpc_impl::CreateCustomChannelImpl方法在src/cpp/client/create_channel.cc文件中
 
@@ -76,7 +76,14 @@ export GRPC_VERBOSITY=DEBUG
 
 * [ClientChannelFactory::CreateSubChannel](https://github.com/grpc/grpc/blob/master/src/core/ext/filters/client_channel/client_channel_factory.h)方法如何被调用？暂时猜测是在创建grpc_call时被创建，具体代码位置在[CallData::PickSubchannelLocked](https://github.com/grpc/grpc/blob/master/src/core/lib/transport/connectivity_state.cc)
 
-# grpc::internal::BlockingUnaryCall
+# grpc::internal::BlockingUnaryCall创建过程
+
+grpc::internal::BlockingUnaryCall是阻塞类型的call，创建流程如下：
+* [grpc::internal::BlockingUnaryCall](https://github.com/grpc/grpc/blob/master/include/grpcpp/impl/codegen/client_unary_call.h)->[grpc_impl::Channel::CreateCall](https://github.com/grpc/grpc/blob/master/src/cpp/client/channel_cc.cc)->[grpc_impl::Channel::CreateCallInternal](https://github.com/grpc/grpc/blob/master/src/cpp/client/channel_cc.cc)->[grpc_channel_create_call](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)->[grpc_channel_create_call_internal](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.cc)->[grpc_call_create](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/call.cc);grpc_call_create内部返回[grpc_call](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/call.cc)对象;[grpc_impl::Channel::CreateCall](https://github.com/grpc/grpc/blob/master/src/cpp/client/channel_cc.cc)内部返回[grpc::internal::Call](https://github.com/grpc/grpc/blob/master/include/grpcpp/impl/codegen/call.h)
+
+## grpc::internal::Call
+
+* grpc::internal::BlockingUnaryCall构造函数创建完grpc::internal::Call对象后执行grpc::internal::Call::PerformOps函数发送CallOpSet对象
 
 # grpc args
 
