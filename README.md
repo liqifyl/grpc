@@ -9,7 +9,29 @@ grpc asyc stream在释放时的顺序是stream->ctx->queue->channel->stub
 # grpc调试
 export GRPC_VERBOSITY=DEBUG
 
+# grpc::Channel对象创建流程
+
+下面以创建SecureChannel为例：
+
+[grpc_impl::CreateCustomChannelImpl](https://github.com/grpc/grpc/blob/master/src/cpp/client/create_channel.cc)->[grpc::ChannelCredentials(抽象类)::CreateChannelImpl](https://github.com/grpc/grpc/blob/master/include/grpcpp/security/credentials_impl.h)->[grpc::SecureChannelCredentials::CreateChannelImpl](https://github.com/grpc/grpc/blob/master/src/cpp/client/secure_credentials.cc)->[grpc::SecureChannelCredentials::CreateChannelWithInterceptors](https://github.com/grpc/grpc/blob/master/src/cpp/client/secure_credentials.cc)->[grpc_core::grpc_secure_channel_create](https://github.com/grpc/grpc/blob/master/src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc)->[grpc_core::CreateChannel](https://github.com/grpc/grpc/blob/master/src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc)->[grpc::CreateChannelInternal](https://github.com/grpc/grpc/blob/master/src/cpp/client/create_channel_internal.cc)
+
+1. grpc::Channel类在src/cpp/client/channel_cc.cc文件中
+
+2. grpc_impl::CreateCustomChannelImpl方法在src/cpp/client/create_channel.cc文件中
+
+3. grpc::SecureChannelCredentials类在src/cpp/client/secure_credentials.cc文件中
+
+4. grpc::SecureChannelCredentials::CreateChannelWithInterceptors中会调用grpc_core::grpc_secure_channel_create方法，grpc_core::grpc_secure_channel_create方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::grpc_secure_channel_create中会调用grpc_core::CreateChannel方法，grpc_core::CreateChannel方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::CreateChannel方法返回[grpc_channel]()结构体对象
+
+## grpc::ChannelCredentials类注意事项
+
+grpc::ChannelCredentials类继承自
+
+
+
 # grpc init流程
+
+## grpc cpp如何触发grpc_channel_create
 
 1. [do_basic_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)初始化channel所需要的资源，本方法内部会执行[grpc_register_built_in_plugins](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)方法注册所有插件;do_basic_init方法定义在[src/core/lib/surface/init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)文件中
 
@@ -53,20 +75,7 @@ export GRPC_VERBOSITY=DEBUG
 
 5. grpc_channel_arg_pointer_create创建指针类型的grpc_arg,grpc_channel_arg_pointer_create函数定义在src/core/lib/channel/channel_args.cc文件中
 
-# grpc_impl::Channel创建流程
 
-下面以创建SecureChannel为例：
-grpc_channel结构体创建流程:grpc_impl::CreateCustomChannelImpl->grpc::ChannelCredentials(抽象类)::CreateChannelImpl->grpc::SecureChannelCredentials::CreateChannelImpl->grpc::SecureChannelCredentials::CreateChannelWithInterceptors->grpc_core::grpc_secure_channel_create->grpc_core::CreateChannel
-
-1. grpc_impl::Channel类在src/cpp/client/channel_cc.cc文件中
-
-2. grpc_impl::CreateCustomChannelImpl方法在src/cpp/client/create_channel.cc文件中
-
-3. grpc::SecureChannelCredentials类在src/cpp/client/secure_credentials.cc文件中
-
-4. grpc::SecureChannelCredentials::CreateChannelWithInterceptors方法中会调用grpc_core::grpc_secure_channel_create方法，grpc_core::grpc_secure_channel_create方法在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc
-
-5. grpc_core::CreateChannel方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc中
 
 ## grpc_core::grpc_secure_channel_create注意事项
 
