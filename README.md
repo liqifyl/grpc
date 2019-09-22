@@ -29,14 +29,12 @@ export GRPC_VERBOSITY=DEBUG
 
 * grpc::internal::GrpcLibraryInitializer和grpc::internal::GrpcLibrary类定义在[grpc_library.h](https://github.com/grpc/grpc/blob/master/include/grpcpp/impl/grpc_library.h)文件中；grpc::internal::CoreCodegen类定义在[core_codegen.cc](https://github.com/grpc/grpc/blob/master/src/cpp/common/core_codegen.cc)中
 
-* grpc::ChannelCredentials类继承自grpc::GrpcLibraryCodegen类,grpc::GrpcLibraryCodegen类构造函数会执行grpc::g_glip::init函数，grpc::g_glip::init函数会调用grpc::grpc_init函数
+* grpc::ChannelCredentials类继承自grpc::GrpcLibraryCodegen类,grpc::GrpcLibraryCodegen类构造函数会执行grpc::g_glip::init函数，grpc::g_glip::init函数会调用grpc::grpc_init
 
 
-# grpc_init函数执行流程
-
+## grpc_init函数执行流程
+* 首先只[do_basic_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)初始化channel所需要的资源，本方法内部会执行[grpc_register_built_in_plugins](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)方法注册所有插件;do_basic_init方法定义在[src/core/lib/surface/init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)文件中
 ## grpc cpp如何触发grpc_channel_create
-
-1. [do_basic_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)初始化channel所需要的资源，本方法内部会执行[grpc_register_built_in_plugins](https://github.com/grpc/grpc/blob/master/src/core/plugin_registry/grpc_plugin_registry.cc)方法注册所有插件;do_basic_init方法定义在[src/core/lib/surface/init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)文件中
 
 2. grpc_init方法定义在src/core/lib/surface/init.cc文件中，本方法执行流程请浏览[init.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init.cc)
 
