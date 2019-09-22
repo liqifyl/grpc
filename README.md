@@ -23,6 +23,15 @@ export GRPC_VERBOSITY=DEBUG
 
 4. grpc::SecureChannelCredentials::CreateChannelWithInterceptors中会调用grpc_core::grpc_secure_channel_create方法，grpc_core::grpc_secure_channel_create方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::grpc_secure_channel_create中会调用grpc_core::CreateChannel方法，grpc_core::CreateChannel方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::CreateChannel方法返回[grpc_channel](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.h)结构体对象
 
+
+## grpc_channel创建流程
+
+* grpc_channel_create->grpc_channel_create_with_builder创建grpc_channel，grpc_channel结构体定义在src/core/lib/surface/channel.h文件中
+
+* grpc_channel_init_create_stack方法定义在src/core/lib/surface/channel_init.cc中
+
+* grpc_channel_element和grpc_channel_filter结构体定义在src/core/lib/channel/channel_stack.h文件中
+
 ## grpc::ChannelCredentials类注意事项
 
 * static ::grpc::internal::GrpcLibraryInitializer g_gli_initialize全局变量定义在文件src/cpp/client/channel_cc.cc中，grpc::internal::GrpcLibraryInitializer类的构造函数会为grpc::g_glip实例化grpc::internal::GrpcLibrary对象和为g_core_codegen实例化grpc::internal::CoreCodegen对象
@@ -48,6 +57,8 @@ export GRPC_VERBOSITY=DEBUG
 * [src/core/lib/surface/init_secure.cc/grpc_security_init](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/init_secure.cc)函数的含义暂时不了解
 
 * [src/core/lib/surface/channel_init.cc/grpc_channel_init_create_stack](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel_init.cc)函数执行所有注册插件的回调函数，grpc_channel_init_create_stack在[src/core/lib/channel/channel_stack_builder.cc/grpc_channel_stack_builder_finish](https://github.com/grpc/grpc/blob/master/src/core/lib/channel/channel_stack_builder.cc)函数中被调用
+
+从grpc_init函数主要作用是初始化所有需要的资源和注册相应需要的插件，注册的插件会在创建grpc_channel对象时调用后面会详解介绍；grpc_init函数使用到了全局变量g_initializations，grpc_init每初始化一次g_initializations加1，grpc_shutdown每调用一次g_initializations减1，g_initializations值变为0才会执行释放全局资源，如果存在多个grpc::channel只有所有grpc::channel销毁才会触发销毁全局资源;grpc为了防止内存泄漏导致释放全局资源是一个特别耗时操作，如果在grpc释放全局资源时同时创建channel可能存在阻塞一段时间，阻塞具体原因请查看[src/core/lib/iomgr/iomgr.cc](https://github.com/grpc/grpc/blob/master/src/core/lib/iomgr/iomgr.cc)中grpc_iomgr_shutdown函数
 
 
 # 插件注册流程和如何被执行
@@ -84,14 +95,6 @@ export GRPC_VERBOSITY=DEBUG
 1. 本方法中会创建2个指针类型的grpc_arg参数，一个指针指向Chttp2SecureClientChannelFactory，一个指针指向grpc_channel_credentials
 
 2. grpc_core::Chttp2SecureClientChannelFactory::CreateSubchannel函数何时被调用
-
-## grpc_channel创建
-
-1. grpc_channel_create->grpc_channel_create_with_builder创建grpc_channel，grpc_channel结构体定义在src/core/lib/surface/channel.h文件中
-
-2. grpc_channel_init_create_stack方法定义在src/core/lib/surface/channel_init.cc中
-
-3. grpc_channel_element和grpc_channel_filter结构体定义在src/core/lib/channel/channel_stack.h文件中
 
 ### grpc_channel_filter结构体分析
 
