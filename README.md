@@ -21,15 +21,18 @@ export GRPC_VERBOSITY=DEBUG
 
 3. grpc::SecureChannelCredentials类在src/cpp/client/secure_credentials.cc文件中
 
-4. grpc::SecureChannelCredentials::CreateChannelWithInterceptors中会调用grpc_core::grpc_secure_channel_create方法，grpc_core::grpc_secure_channel_create方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::grpc_secure_channel_create中会调用grpc_core::CreateChannel方法，grpc_core::CreateChannel方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::CreateChannel方法返回[grpc_channel]()结构体对象
+4. grpc::SecureChannelCredentials::CreateChannelWithInterceptors中会调用grpc_core::grpc_secure_channel_create方法，grpc_core::grpc_secure_channel_create方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::grpc_secure_channel_create中会调用grpc_core::CreateChannel方法，grpc_core::CreateChannel方法定义在src/core/ext/transport/chttp2/client/secure/secure_channel_create.cc，grpc_core::CreateChannel方法返回[grpc_channel](https://github.com/grpc/grpc/blob/master/src/core/lib/surface/channel.h)结构体对象
 
 ## grpc::ChannelCredentials类注意事项
 
-grpc::ChannelCredentials类继承自
+* static ::grpc::internal::GrpcLibraryInitializer g_gli_initialize全局变量定义在文件src/cpp/client/channel_cc.cc中，grpc::internal::GrpcLibraryInitializer类的构造函数会为grpc::g_glip实例化grpc::internal::GrpcLibrary对象和为g_core_codegen实例化grpc::internal::CoreCodegen对象
+
+* grpc::internal::GrpcLibraryInitializer和grpc::internal::GrpcLibrary类定义在[grpc_library.h](https://github.com/grpc/grpc/blob/master/include/grpcpp/impl/grpc_library.h)文件中；grpc::internal::CoreCodegen类定义在[core_codegen.cc](https://github.com/grpc/grpc/blob/master/src/cpp/common/core_codegen.cc)中
+
+* grpc::ChannelCredentials类继承自grpc::GrpcLibraryCodegen类,grpc::GrpcLibraryCodegen类构造函数会执行grpc::g_glip::init函数，grpc::g_glip::init函数会调用grpc::grpc_init函数
 
 
-
-# grpc init流程
+# grpc_init函数执行流程
 
 ## grpc cpp如何触发grpc_channel_create
 
